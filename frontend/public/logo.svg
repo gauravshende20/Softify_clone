@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Harmonia">
+  <rect width="64" height="64" rx="16" fill="#16161d"/>
+  <path d="M18 46V18h6.4v11.4h15.2V18H46v28h-6.4V35.2H24.4V46H18z" fill="#e8b86d"/>
+  <path d="M12 50c8 5 32 5 40 0" fill="none" stroke="#e8b86d" stroke-width="2.4" stroke-linecap="round"/>
+</svg>

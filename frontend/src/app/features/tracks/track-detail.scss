@@ -1,0 +1,36 @@
+.hero {
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 1fr);
+  gap: 1.3rem;
+  align-items: end;
+  margin-bottom: 1.6rem;
+}
+.art {
+  width: 12rem;
+  height: 12rem;
+  border-radius: 0.55rem;
+}
+h1 {
+  margin: 0.2rem 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+}
+.eyebrow {
+  color: var(--accent);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+p {
+  color: var(--muted);
+}
+.actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+@media (max-width: 720px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+}

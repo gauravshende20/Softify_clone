@@ -1,0 +1,52 @@
+@if (data.value().playlist; as playlist) {
+  <header class="hero">
+    <app-cover-art class="art" [src]="playlist.coverUrl" [alt]="playlist.name" [seed]="playlist.name" />
+    <div>
+      <p class="eyebrow">Playlist</p>
+      <h1>{{ playlist.name }}</h1>
+      <p>{{ playlist.description }}</p>
+      <p>{{ playlist.ownerName || 'Harmonia' }} · {{ data.value().tracks.length }} songs · {{ totalDuration() | duration }}</p>
+      <div class="actions">
+        <button type="button" class="btn primary" aria-label="Play playlist" (click)="play()">Play</button>
+        <button type="button" class="btn" aria-label="Shuffle playlist" (click)="shuffle()">Shuffle</button>
+      </div>
+    </div>
+  </header>
+
+  @if (isOwner()) {
+    <form class="adder" (submit)="$event.preventDefault(); lookup()">
+      <label class="sr-only" for="add-track">Add tracks</label>
+      <input id="add-track" [formControl]="query" placeholder="Search tracks to add" (input)="lookup()" />
+      @if (suggestions().length) {
+        <ul>
+          @for (track of suggestions(); track track.id) {
+            <li>
+              <span>{{ track.title }} · {{ track.artistName }}</span>
+              <button type="button" class="btn" (click)="add(track)">Add</button>
+            </li>
+          }
+        </ul>
+      }
+    </form>
+  }
+
+  <section>
+    @for (track of data.value().tracks; track track.id; let i = $index) {
+      <div class="line">
+        <app-track-row
+          [track]="track"
+          [index]="i + 1"
+          [active]="player.currentTrack()?.id === track.id"
+          (play)="play(i)"
+        />
+        @if (isOwner()) {
+          <button type="button" class="text-btn" aria-label="Remove track" (click)="remove(track)">Remove</button>
+        }
+      </div>
+    } @empty {
+      <app-empty-state title="This playlist is empty" message="Owners can search and add tracks above." />
+    }
+  </section>
+} @else if (!data.isLoading()) {
+  <app-empty-state title="Playlist not found" message="It may have been deleted or made private." />
+}

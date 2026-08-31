@@ -1,0 +1,65 @@
+<div class="page">
+  <header>
+    <h1>Artist studio</h1>
+    <p>Upload masters, attach them to albums, and review your catalog.</p>
+  </header>
+
+  <form class="card" [formGroup]="form" (ngSubmit)="upload()">
+    <h2>Upload a track</h2>
+    <label>
+      Title
+      <input formControlName="title" />
+    </label>
+    <label>
+      Audio file
+      <input type="file" accept="audio/*" (change)="onFile($event)" />
+    </label>
+    @if (file()) {
+      <p class="muted">{{ file()?.name }}</p>
+    }
+    <label>
+      Album
+      <select formControlName="albumId">
+        <option value="">Standalone single</option>
+        @for (album of catalogData.value().albums; track album.id) {
+          <option [value]="album.id">{{ album.title }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      Genre
+      <select formControlName="genreId">
+        <option value="">Unspecified</option>
+        @for (genre of catalogData.value().genres; track genre.id) {
+          <option [value]="genre.id">{{ genre.name }}</option>
+        }
+      </select>
+    </label>
+    <label class="check">
+      <input type="checkbox" formControlName="explicit" /> Explicit
+    </label>
+    <button type="submit" class="btn primary" [disabled]="uploading()">
+      {{ uploading() ? 'Uploading…' : 'Upload track' }}
+    </button>
+  </form>
+
+  <section>
+    <h2>Your albums</h2>
+    <div class="grid">
+      @for (album of catalogData.value().albums; track album.id) {
+        <app-media-card [title]="album.title" [subtitle]="album.releaseDate || 'Album'" [image]="album.coverUrl" [link]="['/albums', album.id]" />
+      } @empty {
+        <app-empty-state title="No albums yet" message="Create albums via the catalog API, then attach uploads." />
+      }
+    </div>
+  </section>
+
+  <section>
+    <h2>Your tracks</h2>
+    @for (track of catalogData.value().tracks; track track.id; let i = $index) {
+      <app-track-row [track]="track" [index]="i + 1" (play)="player.playFromList(catalogData.value().tracks, i)" />
+    } @empty {
+      <app-empty-state title="No tracks uploaded" message="Use the form above to send a master." />
+    }
+  </section>
+</div>

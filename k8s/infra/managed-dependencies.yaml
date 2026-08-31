@@ -1,0 +1,20 @@
+# Stateful platform dependencies are expected as managed services in production.
+# Point k8s/config/configmap.yaml at those endpoints instead of running data stores in-cluster.
+#
+# Optional single-replica notes for local/dev clusters only:
+#   mysql:8.4            Service mysql:3306
+#   redis:7-alpine       Service redis:6379
+#   apache/kafka:3.9.1   Service kafka:9092 (KRaft)
+#   opensearch:2.18.0    Service opensearch:9200 (DISABLE_SECURITY_PLUGIN=true)
+#   minio/minio          Service minio:9000 / console 9001
+#
+# Do not use single-replica MySQL/Kafka/OpenSearch for production Harmonia workloads.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: harmonia-managed-dependencies
+  namespace: harmonia
+data:
+  note: |
+    Replace ConfigMap URLs with managed MySQL, Redis, Kafka, OpenSearch, and object storage.
+    This repository does not ship production StatefulSets for those systems.

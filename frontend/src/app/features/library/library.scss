@@ -1,0 +1,43 @@
+.page {
+  display: grid;
+  gap: 1.1rem;
+}
+h1 {
+  margin: 0;
+  font-family: var(--font-display);
+}
+p {
+  color: var(--muted);
+}
+.tabs {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.tabs button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  background: var(--surface-2);
+  color: var(--text);
+}
+.tabs button.on {
+  background: var(--accent);
+  color: #1a140c;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+  gap: 0.4rem;
+}
+.liked-tile {
+  display: grid;
+  place-items: end start;
+  min-height: 10.5rem;
+  padding: 0.9rem;
+  border-radius: 0.8rem;
+  background: linear-gradient(145deg, #e8b86d, #6b3d2a);
+  color: #1a140c;
+  font-weight: 800;
+  font-size: 1.2rem;
+}

@@ -1,0 +1,75 @@
+<header class="bar">
+  <a class="wordmark" routerLink="/" aria-label="Harmonia home">
+    <img src="/logo.svg" alt="" width="24" height="24" />
+    <span>Harmonia</span>
+  </a>
+
+  <form class="search" role="search" (submit)="$event.preventDefault(); submit()">
+    <app-icon name="search" />
+    <label class="sr-only" for="global-search">Search Harmonia</label>
+    <input
+      #searchBox
+      id="global-search"
+      [formControl]="query"
+      placeholder="Search songs, artists, albums"
+      autocomplete="off"
+      (focus)="open.set(suggestions().length > 0)"
+      (blur)="open.set(false)"
+    />
+    @if (open()) {
+      <ul class="suggest" role="listbox">
+        @for (item of suggestions(); track item.id + item.type) {
+          <li>
+            <button type="button" (mousedown)="goTo(item)">
+              <strong>{{ item.title }}</strong>
+              <span>{{ item.subtitle || item.type }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </form>
+
+  <div class="actions">
+    <button type="button" class="icon-btn" aria-label="Notifications" (click)="notesOpen.set(!notesOpen())">
+      <app-icon name="bell" />
+      @if (unread()) {
+        <span class="badge">{{ unread() }}</span>
+      }
+    </button>
+    @if (notesOpen()) {
+      <div class="panel notes">
+        @for (note of notes(); track note.id) {
+          <button type="button" (click)="notifications.markRead(note.id).subscribe()">
+            <strong>{{ note.title }}</strong>
+            <span>{{ note.body }}</span>
+          </button>
+        } @empty {
+          <p>No notifications</p>
+        }
+      </div>
+    }
+
+    <button
+      type="button"
+      class="avatar"
+      [attr.aria-label]="'Account menu for ' + auth.displayName()"
+      (click)="menuOpen.set(!menuOpen())"
+    >
+      {{ initials(auth.displayName()) }}
+    </button>
+    @if (menuOpen()) {
+      <div class="panel menu">
+        <a routerLink="/profile" (click)="menuOpen.set(false)">Profile settings</a>
+        <a routerLink="/library" (click)="menuOpen.set(false)">Library</a>
+        @if (auth.isArtist()) {
+          <a routerLink="/studio" (click)="menuOpen.set(false)">Artist studio</a>
+        }
+        @if (auth.isAdmin()) {
+          <a routerLink="/admin" (click)="menuOpen.set(false)">Admin</a>
+        }
+        <button type="button" (click)="logout()">Sign out</button>
+      </div>
+    }
+  </div>
+</header>

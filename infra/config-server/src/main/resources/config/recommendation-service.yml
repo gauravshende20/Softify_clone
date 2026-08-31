@@ -1,0 +1,12 @@
+server:
+  port: 8087
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+harmonia:
+  catalog:
+    base-url: ${CATALOG_BASE_URL:http://localhost:8083}
+  user:
+    base-url: ${USER_BASE_URL:http://localhost:8082}

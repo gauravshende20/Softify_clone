@@ -1,0 +1,7 @@
+server:
+  port: 8081
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/harmonia_auth?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root123}

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: harmonia-config
+  namespace: harmonia
+data:
+  # Point these at managed MySQL, Redis, Kafka, OpenSearch, and object storage.
+  DB_HOST: mysql.harmonia.svc.cluster.local
+  REDIS_HOST: redis.harmonia.svc.cluster.local
+  REDIS_PORT: "6379"
+  KAFKA_BOOTSTRAP_SERVERS: kafka.harmonia.svc.cluster.local:9092
+  OPENSEARCH_URL: http://opensearch.harmonia.svc.cluster.local:9200
+  MINIO_ENDPOINT: http://minio.harmonia.svc.cluster.local:9000
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server.harmonia.svc.cluster.local:8761/eureka
+  CONFIG_SERVER_URI: http://config-server.harmonia.svc.cluster.local:8888
+  MAIL_HOST: ""
+  MAIL_PORT: "587"
+  MAIL_FROM: noreply@harmonia.local
+  ADMIN_EMAIL: admin@harmonia.local
+  SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
+  CATALOG_BASE_URL: http://catalog-service.harmonia.svc.cluster.local:8083
+  PLAYLIST_BASE_URL: http://playlist-service.harmonia.svc.cluster.local:8084
+  USER_BASE_URL: http://user-service.harmonia.svc.cluster.local:8082

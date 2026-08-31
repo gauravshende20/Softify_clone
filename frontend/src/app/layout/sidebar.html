@@ -1,0 +1,68 @@
+<aside class="sidebar" aria-label="Main">
+  <a routerLink="/" class="brand" aria-label="Harmonia home">
+    <img src="/logo.svg" alt="" width="28" height="28" />
+    <span>Harmonia</span>
+  </a>
+
+  <nav class="nav">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <app-icon name="home" /> Home
+    </a>
+    <a routerLink="/search" routerLinkActive="active">
+      <app-icon name="search" /> Search
+    </a>
+    <a routerLink="/library" routerLinkActive="active">
+      <app-icon name="library" /> Library
+    </a>
+    <a routerLink="/browse" routerLinkActive="active">
+      <app-icon name="music" /> Browse
+    </a>
+  </nav>
+
+  <div class="collection">
+    <a routerLink="/liked-songs">
+      <app-icon name="heart" /> Liked songs
+    </a>
+    <a routerLink="/recently-played">
+      <app-icon name="queue" /> Recently played
+    </a>
+    <a routerLink="/recommendations">
+      <app-icon name="music" /> Made for you
+    </a>
+    @if (auth.isArtist()) {
+      <a routerLink="/studio">
+        <app-icon name="studio" /> Artist studio
+      </a>
+    }
+    @if (auth.isAdmin()) {
+      <a routerLink="/admin">
+        <app-icon name="admin" /> Admin
+      </a>
+    }
+  </div>
+
+  <section class="playlists">
+    <header>
+      <h2>Playlists</h2>
+      <button type="button" class="icon-btn" aria-label="Create playlist" (click)="creating.set(!creating())">
+        <app-icon name="plus" />
+      </button>
+    </header>
+    @if (creating()) {
+      <form class="create" (submit)="$event.preventDefault(); createPlaylist()">
+        <label class="sr-only" for="new-playlist">Playlist name</label>
+        <input id="new-playlist" [formControl]="name" placeholder="Playlist name" />
+        <button type="submit">Save</button>
+      </form>
+    }
+    <ul>
+      @for (playlist of playlists.value(); track playlist.id) {
+        <li>
+          <a [routerLink]="['/playlists', playlist.id]">{{ playlist.name }}</a>
+        </li>
+      } @empty {
+        <li class="muted">No playlists yet</li>
+      }
+    </ul>
+  </section>
+</aside>

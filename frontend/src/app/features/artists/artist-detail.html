@@ -1,0 +1,45 @@
+@if (data.value().artist; as artist) {
+  <header class="hero">
+    <app-cover-art class="photo" [src]="artist.imageUrl" [alt]="artist.name" [seed]="artist.name" />
+    <div>
+      <p class="eyebrow">{{ artist.verified ? 'Verified artist' : 'Artist' }}</p>
+      <h1>{{ artist.name }}</h1>
+      <p>{{ formatCount(artist.monthlyListeners || artist.followers) }} monthly listeners</p>
+      <p class="bio">{{ artist.bio }}</p>
+      <div class="actions">
+        <button type="button" class="btn primary" aria-label="Play popular tracks" (click)="playAll()">Play</button>
+        <button type="button" class="btn" [attr.aria-label]="following() ? 'Unfollow artist' : 'Follow artist'" (click)="toggleFollow()">
+          {{ following() ? 'Following' : 'Follow' }}
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <h2>Popular tracks</h2>
+    @for (track of data.value().tracks; track track.id; let i = $index) {
+      <app-track-row
+        [track]="track"
+        [index]="i + 1"
+        [active]="player.currentTrack()?.id === track.id"
+        (play)="player.playFromList(data.value().tracks, i, { contextType: 'artist', contextId: artist.id })"
+      />
+    } @empty {
+      <app-empty-state title="No published tracks" message="This artist has not released a catalog yet." />
+    }
+  </section>
+
+  <app-section-row title="Albums">
+    @for (album of data.value().albums; track album.id) {
+      <app-media-card
+        [title]="album.title"
+        [subtitle]="album.releaseDate || album.year?.toString() || 'Album'"
+        [image]="album.coverUrl"
+        [link]="['/albums', album.id]"
+        (play)="player.playFromList(data.value().tracks.filter(t => t.albumId === album.id), 0)"
+      />
+    }
+  </app-section-row>
+} @else if (!data.isLoading()) {
+  <app-empty-state title="Artist not found" message="This profile is missing from the catalog." />
+}

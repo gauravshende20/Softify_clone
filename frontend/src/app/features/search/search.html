@@ -1,0 +1,79 @@
+<div class="page">
+  <header>
+    <h1>Search</h1>
+    <form (submit)="$event.preventDefault(); submit()">
+      <label class="sr-only" for="search-page">Search catalog</label>
+      <input
+        id="search-page"
+        [formControl]="query"
+        [placeholder]="q() || 'Songs, artists, albums, playlists, genres'"
+      />
+    </form>
+  </header>
+
+  @if (!q()) {
+    <app-empty-state title="Find a frequency" message="Try an artist, a late-night album, or a playlist mood." icon="search" />
+  } @else if (results.isLoading()) {
+    <p class="muted">Searching “{{ q() }}”…</p>
+  } @else {
+    <section>
+      <h2>Songs</h2>
+      @for (track of results.value().tracks; track track.id; let i = $index) {
+        <app-track-row
+          [track]="track"
+          [index]="i + 1"
+          [active]="player.currentTrack()?.id === track.id"
+          (play)="player.playFromList(results.value().tracks, i)"
+          (like)="toggleLike(track.id, track.liked)"
+        />
+      } @empty {
+        <p class="muted">No songs matched.</p>
+      }
+    </section>
+
+    <app-section-row title="Artists">
+      @for (artist of results.value().artists; track artist.id) {
+        <app-media-card
+          [title]="artist.name"
+          [subtitle]="'Artist'"
+          [image]="artist.imageUrl"
+          [link]="['/artists', artist.id]"
+          [round]="true"
+        />
+      }
+    </app-section-row>
+
+    <app-section-row title="Albums">
+      @for (album of results.value().albums; track album.id) {
+        <app-media-card
+          [title]="album.title"
+          [subtitle]="album.artistName || ''"
+          [image]="album.coverUrl"
+          [link]="['/albums', album.id]"
+        />
+      }
+    </app-section-row>
+
+    <app-section-row title="Playlists">
+      @for (playlist of results.value().playlists; track playlist.id) {
+        <app-media-card
+          [title]="playlist.name"
+          [subtitle]="playlist.ownerName || 'Playlist'"
+          [image]="playlist.coverUrl"
+          [link]="['/playlists', playlist.id]"
+        />
+      }
+    </app-section-row>
+
+    <app-section-row title="Genres">
+      @for (genre of results.value().genres; track genre.id) {
+        <app-media-card
+          [title]="genre.name"
+          [subtitle]="'Genre'"
+          [image]="genre.imageUrl"
+          [link]="['/browse/genre', genre.id]"
+        />
+      }
+    </app-section-row>
+  }
+</div>

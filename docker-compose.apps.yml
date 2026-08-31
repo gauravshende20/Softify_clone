@@ -1,0 +1,206 @@
+name: harmonia
+
+# Start after infrastructure:
+#   docker compose -f docker-compose.yml -f docker-compose.apps.yml up --build
+#
+# Images expect pre-built Spring Boot jars:
+#   mvn -B -DskipTests package
+
+x-java-env: &java-env
+  JWT_SECRET: ${JWT_SECRET:-local-dev-only-change-me-use-env-jwt-secret-32b}
+  DB_USERNAME: ${DB_USERNAME:-root}
+  DB_PASSWORD: ${DB_PASSWORD:-root123}
+  KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+  CONFIG_SERVER_URI: http://config-server:8888
+  OPENSEARCH_URL: http://opensearch:9200
+  MINIO_ENDPOINT: http://minio:9000
+  MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-harmonia}
+  MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-harmonia-minio}
+  MAIL_HOST: ${MAIL_HOST:-}
+  MAIL_PORT: ${MAIL_PORT:-587}
+  MAIL_USERNAME: ${MAIL_USERNAME:-}
+  MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+  MAIL_FROM: ${MAIL_FROM:-noreply@harmonia.local}
+
+services:
+  config-server:
+    build:
+      context: ./infra/config-server
+    ports:
+      - "8888:8888"
+    environment:
+      <<: *java-env
+      EUREKA_CLIENT_ENABLED: "true"
+      SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
+    volumes:
+      - ./config-repo:/config-repo:ro
+    depends_on:
+      eureka-server:
+        condition: service_started
+
+  eureka-server:
+    build:
+      context: ./infra/eureka-server
+    ports:
+      - "8761:8761"
+
+  api-gateway:
+    build:
+      context: ./infra/api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      <<: *java-env
+    depends_on:
+      config-server:
+        condition: service_started
+      redis:
+        condition: service_started
+
+  auth-service:
+    build:
+      context: ./services/auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      <<: *java-env
+      DB_URL: jdbc:mysql://mysql:3306/harmonia_auth?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@harmonia.local}
+      ADMIN_BOOTSTRAP_PASSWORD: ${ADMIN_BOOTSTRAP_PASSWORD:-ChangeMe_Admin_123!}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      config-server:
+        condition: service_started
+
+  user-service:
+    build:
+      context: ./services/user-service
+    ports:
+      - "8082:8082"
+    environment:
+      <<: *java-env
+      DB_URL: jdbc:mysql://mysql:3306/harmonia_user?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+
+  catalog-service:
+    build:
+      context: ./services/catalog-service
+    ports:
+      - "8083:8083"
+    environment:
+      <<: *java-env
+      DB_URL: jdbc:mysql://mysql:3306/harmonia_catalog?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    depends_on:
+      mysql:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      config-server:
+        condition: service_started
+
+  playlist-service:
+    build:
+      context: ./services/playlist-service
+    ports:
+      - "8084:8084"
+    environment:
+      <<: *java-env
+      DB_URL: jdbc:mysql://mysql:3306/harmonia_playlist?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+
+  playback-service:
+    build:
+      context: ./services/playback-service
+    ports:
+      - "8085:8085"
+    environment:
+      <<: *java-env
+      CATALOG_BASE_URL: http://catalog-service:8083
+      PLAYLIST_BASE_URL: http://playlist-service:8084
+    depends_on:
+      redis:
+        condition: service_started
+      config-server:
+        condition: service_started
+
+  search-service:
+    build:
+      context: ./services/search-service
+    ports:
+      - "8086:8086"
+    environment:
+      <<: *java-env
+    depends_on:
+      opensearch:
+        condition: service_started
+      config-server:
+        condition: service_started
+
+  recommendation-service:
+    build:
+      context: ./services/recommendation-service
+    ports:
+      - "8087:8087"
+    environment:
+      <<: *java-env
+      CATALOG_BASE_URL: http://catalog-service:8083
+      USER_BASE_URL: http://user-service:8082
+    depends_on:
+      redis:
+        condition: service_started
+      config-server:
+        condition: service_started
+
+  analytics-service:
+    build:
+      context: ./services/analytics-service
+    ports:
+      - "8088:8088"
+    environment:
+      <<: *java-env
+      DB_URL: jdbc:mysql://mysql:3306/harmonia_analytics?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      config-server:
+        condition: service_started
+
+  notification-service:
+    build:
+      context: ./services/notification-service
+    ports:
+      - "8089:8089"
+    environment:
+      <<: *java-env
+      DB_URL: jdbc:mysql://mysql:3306/harmonia_notification?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      config-server:
+        condition: service_started
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - api-gateway

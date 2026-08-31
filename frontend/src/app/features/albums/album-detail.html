@@ -1,0 +1,32 @@
+@if (data.value().album; as album) {
+  <header class="hero">
+    <app-cover-art class="art" [src]="album.coverUrl" [alt]="album.title" [seed]="album.title" />
+    <div>
+      <p class="eyebrow">Album</p>
+      <h1>{{ album.title }}</h1>
+      <p>
+        <a [routerLink]="['/artists', album.artistId || album.artist?.id]">{{ album.artistName || album.artist?.name }}</a>
+        · {{ album.releaseDate || album.year }} · {{ data.value().tracks.length }} songs ·
+        {{ totalDuration() | duration }}
+      </p>
+      <div class="actions">
+        <button type="button" class="btn primary" aria-label="Play album" (click)="play()">Play</button>
+        <button type="button" class="btn" aria-label="Save album" (click)="save()">Save</button>
+      </div>
+    </div>
+  </header>
+  <section>
+    @for (track of data.value().tracks; track track.id; let i = $index) {
+      <app-track-row
+        [track]="track"
+        [index]="track.trackNumber || i + 1"
+        [active]="player.currentTrack()?.id === track.id"
+        (play)="play(i)"
+      />
+    } @empty {
+      <app-empty-state title="No tracks on this album" message="The catalog has not attached songs yet." />
+    }
+  </section>
+} @else if (!data.isLoading()) {
+  <app-empty-state title="Album not found" message="This release is not in the catalog." />
+}

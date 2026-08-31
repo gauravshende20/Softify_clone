@@ -1,0 +1,72 @@
+<div class="page">
+  <header class="hero">
+    <p class="eyebrow">Evening mix</p>
+    <h1>Good to hear you, {{ auth.displayName() }}</h1>
+    <p>A quieter catalog, a warmer room — recently played, made for you, and what’s moving tonight.</p>
+  </header>
+
+  @if (feed.isLoading()) {
+    <p class="muted">Tuning the room…</p>
+  }
+
+  <app-section-row title="Recently played" link="/recently-played">
+    @for (track of feed.value().recent.slice(0, 10); track track.id) {
+      <app-media-card
+        [title]="track.title"
+        [subtitle]="track.artistName || track.artist?.name || ''"
+        [image]="track.coverUrl"
+        [link]="['/tracks', track.id]"
+        (play)="player.playFromList(feed.value().recent, $index)"
+      />
+    } @empty {
+      <app-empty-state title="No recent plays" message="Start a record and it will land here." />
+    }
+  </app-section-row>
+
+  <app-section-row title="Made for you" link="/recommendations">
+    @for (playlist of feed.value().madeForYou; track playlist.id) {
+      <app-media-card
+        [title]="playlist.name"
+        [subtitle]="playlist.description || 'Personal mix'"
+        [image]="playlist.coverUrl"
+        [link]="['/playlists', playlist.id]"
+      />
+    }
+  </app-section-row>
+
+  <section class="stack">
+    <h2>Trending</h2>
+    @for (track of feed.value().trending.slice(0, 8); track track.id; let i = $index) {
+      <app-track-row
+        [track]="track"
+        [index]="i + 1"
+        [active]="player.currentTrack()?.id === track.id"
+        (play)="player.playFromList(feed.value().trending, i)"
+        (like)="like(track.id)"
+      />
+    }
+  </section>
+
+  <app-section-row title="Popular artists" link="/browse">
+    @for (artist of feed.value().artists; track artist.id) {
+      <app-media-card
+        [title]="artist.name"
+        [subtitle]="(artist.followers || 0) + ' followers'"
+        [image]="artist.imageUrl"
+        [link]="['/artists', artist.id]"
+        [round]="true"
+      />
+    }
+  </app-section-row>
+
+  <app-section-row title="New releases">
+    @for (album of feed.value().releases; track album.id) {
+      <app-media-card
+        [title]="album.title"
+        [subtitle]="album.artistName || album.artist?.name || ''"
+        [image]="album.coverUrl"
+        [link]="['/albums', album.id]"
+      />
+    }
+  </app-section-row>
+</div>

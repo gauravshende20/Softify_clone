@@ -1,0 +1,83 @@
+server:
+  port: 8087
+spring:
+  application:
+    name: recommendation-service
+  config:
+    import: optional:configserver:${CONFIG_SERVER_URI:http://localhost:8888}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2s
+      repositories:
+        enabled: false
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:19092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka}
+    enabled: ${EUREKA_CLIENT_ENABLED:true}
+  instance:
+    prefer-ip-address: true
+harmonia:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:local-dev-only-change-me-use-env-jwt-secret-32b}
+      issuer: harmonia-auth
+  catalog:
+    base-url: ${CATALOG_BASE_URL:http://localhost:8083}
+  user:
+    base-url: ${USER_BASE_URL:http://localhost:8082}
+resilience4j:
+  circuitbreaker:
+    instances:
+      catalog:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        ignoreExceptions:
+          - com.harmonia.common.api.error.HarmoniaException
+      user:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        ignoreExceptions:
+          - com.harmonia.common.api.error.HarmoniaException
+  retry:
+    instances:
+      catalog:
+        maxAttempts: 3
+        waitDuration: 200ms
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
+        ignoreExceptions:
+          - com.harmonia.common.api.error.HarmoniaException
+      user:
+        maxAttempts: 2
+        waitDuration: 150ms
+        ignoreExceptions:
+          - com.harmonia.common.api.error.HarmoniaException
+  timelimiter:
+    instances:
+      catalog:
+        timeoutDuration: 3s
+        cancelRunningFuture: true
+      user:
+        timeoutDuration: 3s
+        cancelRunningFuture: true
+springdoc:
+  api-docs:
+    path: /v3/api-docs

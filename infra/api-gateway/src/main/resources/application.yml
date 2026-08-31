@@ -1,0 +1,93 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: api-gateway
+  config:
+    import: optional:configserver:${CONFIG_SERVER_URI:http://localhost:8888}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  cloud:
+    gateway:
+      default-filters:
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenishRate: 50
+            redis-rate-limiter.burstCapacity: 100
+            redis-rate-limiter.requestedTokens: 1
+            key-resolver: "#{@ipKeyResolver}"
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+      routes:
+        - id: auth-service
+          uri: ${AUTH_SERVICE_URI:lb://auth-service}
+          predicates:
+            - Path=/api/v1/auth/**
+        - id: user-service
+          uri: ${USER_SERVICE_URI:lb://user-service}
+          predicates:
+            - Path=/api/v1/users/**, /api/v1/me/**, /api/v1/library/**
+        - id: catalog-service
+          uri: ${CATALOG_SERVICE_URI:lb://catalog-service}
+          predicates:
+            - Path=/api/v1/artists/**, /api/v1/albums/**, /api/v1/tracks/**, /api/v1/genres/**, /api/v1/storage/**
+        - id: playlist-service
+          uri: ${PLAYLIST_SERVICE_URI:lb://playlist-service}
+          predicates:
+            - Path=/api/v1/playlists/**
+        - id: playback-service
+          uri: ${PLAYBACK_SERVICE_URI:lb://playback-service}
+          predicates:
+            - Path=/api/v1/playback/**
+        - id: search-service
+          uri: ${SEARCH_SERVICE_URI:lb://search-service}
+          predicates:
+            - Path=/api/v1/search/**
+        - id: recommendation-service
+          uri: ${RECOMMENDATION_SERVICE_URI:lb://recommendation-service}
+          predicates:
+            - Path=/api/v1/recommendations/**
+        - id: notification-service
+          uri: ${NOTIFICATION_SERVICE_URI:lb://notification-service}
+          predicates:
+            - Path=/api/v1/notifications/**
+        - id: analytics-service
+          uri: ${ANALYTICS_SERVICE_URI:lb://analytics-service}
+          predicates:
+            - Path=/api/v1/analytics/**, /api/v1/admin/analytics/**
+      httpclient:
+        connect-timeout: 2000
+        response-timeout: 10s
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${JWT_ISSUER:harmonia-auth}
+harmonia:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:local-dev-only-change-me-use-env-jwt-secret-32b}
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka}
+    enabled: ${EUREKA_CLIENT_ENABLED:true}
+  instance:
+    prefer-ip-address: true
+resilience4j:
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 5s
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 20
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,gateway

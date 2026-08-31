@@ -1,0 +1,52 @@
+:host {
+  display: block;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1.1rem;
+  padding: 1.6rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+p,
+.foot {
+  color: var(--muted);
+}
+
+form {
+  display: grid;
+  gap: 0.85rem;
+}
+
+label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+}
+
+input {
+  border: 1px solid var(--border);
+  background: #101014;
+  color: var(--text);
+  border-radius: 0.6rem;
+  padding: 0.75rem 0.8rem;
+}
+
+.alert {
+  background: rgba(224, 122, 106, 0.12);
+  color: #f1b2aa;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.foot a {
+  color: var(--accent);
+}

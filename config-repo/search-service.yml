@@ -1,0 +1,5 @@
+server:
+  port: 8086
+harmonia:
+  search:
+    url: ${OPENSEARCH_URL:http://localhost:9200}

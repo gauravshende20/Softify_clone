@@ -1,0 +1,35 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+      - org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration
+      - com.harmonia.common.kafka.KafkaAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+  datasource:
+    url: jdbc:h2:mem:user_service;MODE=MySQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+  flyway:
+    enabled: false
+  kafka:
+    bootstrap-servers: localhost:9092
+eureka:
+  client:
+    enabled: false
+harmonia:
+  security:
+    jwt:
+      secret: test-secret-test-secret-test-secret-32
+      issuer: harmonia-auth-test
+logging:
+  level:
+    org.springframework: WARN

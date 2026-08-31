@@ -1,0 +1,113 @@
+:host {
+  display: contents;
+}
+
+.sidebar {
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  gap: 1.1rem;
+  padding: 1.1rem 0.9rem 1.4rem;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  min-height: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+}
+
+.nav,
+.collection,
+.playlists ul {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.nav a,
+.collection a,
+.playlists a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.55rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.nav a.active,
+.nav a:hover,
+.collection a:hover,
+.playlists a:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.playlists {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.4rem;
+}
+
+h2 {
+  margin: 0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+}
+
+.create {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.4rem;
+  padding: 0.3rem;
+}
+
+.create input,
+.create button {
+  border-radius: 0.45rem;
+  border: 1px solid var(--border);
+  background: #111116;
+  color: var(--text);
+  padding: 0.4rem 0.55rem;
+}
+
+.create button {
+  background: var(--accent);
+  color: #1a140c;
+  border: 0;
+  font-weight: 700;
+}
+
+.muted {
+  color: var(--muted);
+  padding: 0.4rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 840px) {
+  .sidebar {
+    display: none;
+  }
+}

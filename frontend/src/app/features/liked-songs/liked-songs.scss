@@ -1,0 +1,25 @@
+.hero {
+  display: flex;
+  gap: 1.2rem;
+  align-items: end;
+  margin-bottom: 1.2rem;
+}
+.tile {
+  width: 10rem;
+  height: 10rem;
+  border-radius: 0.6rem;
+  background: linear-gradient(145deg, #e8b86d, #6b3d2a);
+}
+h1 {
+  margin: 0.15rem 0;
+  font-family: var(--font-display);
+}
+.eyebrow {
+  color: var(--accent);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+p {
+  color: var(--muted);
+}

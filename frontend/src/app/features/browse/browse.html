@@ -1,0 +1,27 @@
+<div class="page">
+  <header>
+    <h1>Browse</h1>
+    <p>Genres, colors, and the latest rooms on Harmonia.</p>
+  </header>
+
+  <div class="genres">
+    @for (genre of genres.value(); track genre.id) {
+      <a class="tile" [routerLink]="['/browse/genre', genre.id]" [style.background]="genre.color || gradient(genre.name)">
+        <span>{{ genre.name }}</span>
+      </a>
+    } @empty {
+      <app-empty-state title="No genres yet" message="The catalog will light these tiles as soon as genres arrive." />
+    }
+  </div>
+
+  <app-section-row title="New releases">
+    @for (album of releases.value(); track album.id) {
+      <app-media-card
+        [title]="album.title"
+        [subtitle]="album.artistName || album.artist?.name || ''"
+        [image]="album.coverUrl"
+        [link]="['/albums', album.id]"
+      />
+    }
+  </app-section-row>
+</div>

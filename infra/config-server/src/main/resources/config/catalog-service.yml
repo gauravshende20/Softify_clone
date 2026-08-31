@@ -1,0 +1,14 @@
+server:
+  port: 8083
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/harmonia_catalog?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root123}
+harmonia:
+  storage:
+    endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+    access-key: ${MINIO_ACCESS_KEY:harmonia}
+    secret-key: ${MINIO_SECRET_KEY:harmonia-minio}
+    bucket-audio: harmonia-audio
+    bucket-artwork: harmonia-artwork

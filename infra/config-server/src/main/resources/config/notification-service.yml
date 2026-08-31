@@ -1,0 +1,10 @@
+server:
+  port: 8089
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/harmonia_notification?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root123}
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}

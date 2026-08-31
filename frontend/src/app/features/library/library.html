@@ -1,0 +1,52 @@
+<div class="page">
+  <header>
+    <h1>Library</h1>
+    <p>Your playlists, likes, saved albums, and followed artists.</p>
+  </header>
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" [class.on]="tab() === 'playlists'" (click)="tab.set('playlists')">Playlists</button>
+    <button type="button" role="tab" [class.on]="tab() === 'liked'" (click)="tab.set('liked')">Liked</button>
+    <button type="button" role="tab" [class.on]="tab() === 'albums'" (click)="tab.set('albums')">Albums</button>
+    <button type="button" role="tab" [class.on]="tab() === 'artists'" (click)="tab.set('artists')">Artists</button>
+  </div>
+
+  @switch (tab()) {
+    @case ('playlists') {
+      <div class="grid">
+        <a class="liked-tile" routerLink="/liked-songs">Liked songs</a>
+        @for (playlist of data.value().playlists; track playlist.id) {
+          <app-media-card [title]="playlist.name" [subtitle]="(playlist.trackCount || 0) + ' songs'" [image]="playlist.coverUrl" [link]="['/playlists', playlist.id]" />
+        } @empty {
+          <app-empty-state title="No playlists" message="Create one from the sidebar." />
+        }
+      </div>
+    }
+    @case ('liked') {
+      <div class="grid">
+        @for (track of data.value().liked; track track.id) {
+          <app-media-card [title]="track.title" [subtitle]="track.artistName || ''" [image]="track.coverUrl" [link]="['/tracks', track.id]" />
+        } @empty {
+          <app-empty-state title="No liked songs" message="Tap the heart on any track." icon="heart" />
+        }
+      </div>
+    }
+    @case ('albums') {
+      <div class="grid">
+        @for (album of data.value().albums; track album.id) {
+          <app-media-card [title]="album.title" [subtitle]="album.artistName || ''" [image]="album.coverUrl" [link]="['/albums', album.id]" />
+        } @empty {
+          <app-empty-state title="No saved albums" message="Save an album from its page." />
+        }
+      </div>
+    }
+    @case ('artists') {
+      <div class="grid">
+        @for (artist of data.value().artists; track artist.id) {
+          <app-media-card [title]="artist.name" subtitle="Artist" [image]="artist.imageUrl" [link]="['/artists', artist.id]" [round]="true" />
+        } @empty {
+          <app-empty-state title="No followed artists" message="Follow someone from their profile." />
+        }
+      </div>
+    }
+  }
+</div>

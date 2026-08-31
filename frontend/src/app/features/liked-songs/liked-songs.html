@@ -1,0 +1,24 @@
+<div class="page">
+  <header class="hero">
+    <div class="tile" aria-hidden="true"></div>
+    <div>
+      <p class="eyebrow">Playlist</p>
+      <h1>Liked songs</h1>
+      <p>{{ tracks.value().length }} saved titles</p>
+      <button type="button" class="btn primary" aria-label="Play liked songs" (click)="player.playFromList(tracks.value(), 0, { contextType: 'liked' })">
+        Play
+      </button>
+    </div>
+  </header>
+  @for (track of tracks.value(); track track.id; let i = $index) {
+    <app-track-row
+      [track]="track"
+      [index]="i + 1"
+      [active]="player.currentTrack()?.id === track.id"
+      (play)="player.playFromList(tracks.value(), i, { contextType: 'liked' })"
+      (like)="unlike(track)"
+    />
+  } @empty {
+    <app-empty-state title="No liked songs yet" message="Tap the heart on any track to keep it here." icon="heart" />
+  }
+</div>

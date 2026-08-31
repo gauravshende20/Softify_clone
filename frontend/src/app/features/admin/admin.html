@@ -1,0 +1,93 @@
+<div class="page">
+  <header>
+    <h1>Admin</h1>
+    <p>Catalog health, listeners, and publishing activity.</p>
+  </header>
+
+  <section class="kpis" aria-label="Overview">
+    <article><span>Users</span><strong>{{ formatCount(kpi('users')) }}</strong></article>
+    <article><span>Artists</span><strong>{{ formatCount(kpi('artists')) }}</strong></article>
+    <article><span>Tracks</span><strong>{{ formatCount(kpi('tracks')) }}</strong></article>
+    <article><span>Playlists</span><strong>{{ formatCount(kpi('playlists')) }}</strong></article>
+    <article><span>Plays (24h)</span><strong>{{ formatCount(kpi('plays')) }}</strong></article>
+    <article><span>Likes (24h)</span><strong>{{ formatCount(kpi('likes')) }}</strong></article>
+  </section>
+
+  <div class="tabs" role="tablist">
+    <button type="button" [class.on]="tab() === 'users'" (click)="tab.set('users')">Users</button>
+    <button type="button" [class.on]="tab() === 'artists'" (click)="tab.set('artists')">Artists</button>
+    <button type="button" [class.on]="tab() === 'tracks'" (click)="tab.set('tracks')">Tracks</button>
+    <button type="button" [class.on]="tab() === 'playlists'" (click)="tab.set('playlists')">Playlists</button>
+  </div>
+
+  @switch (tab()) {
+    @case ('users') {
+      <table>
+        <thead><tr><th>Email</th><th>Name</th><th>Roles</th><th>Created</th></tr></thead>
+        <tbody>
+          @for (row of tables.value().users.content; track row.id) {
+            <tr>
+              <td>{{ row.email }}</td>
+              <td>{{ row.displayName }}</td>
+              <td>{{ row.roles?.join(', ') }}</td>
+              <td>{{ row.createdAt }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="4"><app-empty-state title="No users" message="The analytics service has not returned accounts." /></td></tr>
+          }
+        </tbody>
+      </table>
+    }
+    @case ('artists') {
+      <table>
+        <thead><tr><th>Name</th><th>Followers</th><th>Tracks</th><th>Verified</th></tr></thead>
+        <tbody>
+          @for (row of tables.value().artists.content; track row.id) {
+            <tr>
+              <td>{{ row.name }}</td>
+              <td>{{ formatCount(row.followers) }}</td>
+              <td>{{ row.trackCount }}</td>
+              <td>{{ row.verified ? 'Yes' : 'No' }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="4"><app-empty-state title="No artists" message="No artist rows yet." /></td></tr>
+          }
+        </tbody>
+      </table>
+    }
+    @case ('tracks') {
+      <table>
+        <thead><tr><th>Title</th><th>Artist</th><th>Plays</th><th>Published</th></tr></thead>
+        <tbody>
+          @for (row of tables.value().tracks.content; track row.id) {
+            <tr>
+              <td>{{ row.title }}</td>
+              <td>{{ row.artistName }}</td>
+              <td>{{ formatCount(row.playCount) }}</td>
+              <td>{{ row.published ? 'Yes' : 'No' }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="4"><app-empty-state title="No tracks" message="No catalog rows yet." /></td></tr>
+          }
+        </tbody>
+      </table>
+    }
+    @case ('playlists') {
+      <table>
+        <thead><tr><th>Name</th><th>Owner</th><th>Tracks</th><th>Public</th></tr></thead>
+        <tbody>
+          @for (row of tables.value().playlists.content; track row.id) {
+            <tr>
+              <td>{{ row.name }}</td>
+              <td>{{ row.ownerName }}</td>
+              <td>{{ row.trackCount }}</td>
+              <td>{{ row.public ? 'Yes' : 'No' }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="4"><app-empty-state title="No playlists" message="No playlist rows yet." /></td></tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</div>

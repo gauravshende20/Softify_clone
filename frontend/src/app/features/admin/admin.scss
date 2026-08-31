@@ -1,0 +1,65 @@
+.page {
+  display: grid;
+  gap: 1.2rem;
+}
+h1 {
+  margin: 0;
+  font-family: var(--font-display);
+}
+p {
+  color: var(--muted);
+}
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 0.7rem;
+}
+.kpis article {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  padding: 0.9rem;
+  display: grid;
+  gap: 0.3rem;
+}
+.kpis span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.kpis strong {
+  font-size: 1.5rem;
+}
+.tabs {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.tabs button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.4rem 0.85rem;
+  background: var(--surface-2);
+  color: var(--text);
+}
+.tabs button.on {
+  background: var(--accent);
+  color: #1a140c;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border-radius: 0.8rem;
+  overflow: hidden;
+}
+th,
+td {
+  text-align: left;
+  padding: 0.7rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+th {
+  color: var(--muted);
+  font-weight: 650;
+}

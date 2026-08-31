@@ -1,0 +1,9 @@
+package com.harmonia.playlist.dto;
+
+import jakarta.validation.constraints.NotEmpty;
+
+import java.util.List;
+import java.util.UUID;
+
+public record ReorderTracksRequest(@NotEmpty List<UUID> trackIds) {
+}

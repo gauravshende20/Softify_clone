@@ -1,0 +1,54 @@
+server:
+  port: 8089
+spring:
+  application:
+    name: notification-service
+  config:
+    import: optional:configserver:${CONFIG_SERVER_URI:http://localhost:8888}
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/harmonia_notification?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root123}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:19092}
+    consumer:
+      group-id: notification-service
+      auto-offset-reset: earliest
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:false}
+          starttls:
+            enable: ${MAIL_SMTP_STARTTLS:true}
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka}
+    enabled: ${EUREKA_CLIENT_ENABLED:true}
+  instance:
+    prefer-ip-address: true
+harmonia:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:local-dev-only-change-me-use-env-jwt-secret-32b}
+      issuer: harmonia-auth
+  mail:
+    from: ${MAIL_FROM:noreply@harmonia.local}
+springdoc:
+  api-docs:
+    path: /v3/api-docs

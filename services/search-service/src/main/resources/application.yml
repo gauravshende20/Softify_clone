@@ -1,0 +1,38 @@
+server:
+  port: 8086
+spring:
+  application:
+    name: search-service
+  config:
+    import: optional:configserver:${CONFIG_SERVER_URI:http://localhost:8888}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:19092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: search-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.harmonia.common.kafka
+        spring.json.value.default.type: com.harmonia.common.kafka.DomainEvent
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka}
+    enabled: ${EUREKA_CLIENT_ENABLED:true}
+  instance:
+    prefer-ip-address: true
+harmonia:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:local-dev-only-change-me-use-env-jwt-secret-32b}
+      issuer: harmonia-auth
+  search:
+    url: ${OPENSEARCH_URL:http://localhost:9200}
+    index: harmonia-search
+springdoc:
+  api-docs:
+    path: /v3/api-docs

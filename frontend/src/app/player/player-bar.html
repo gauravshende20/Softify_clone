@@ -1,0 +1,102 @@
+<div class="player" [class.empty]="!player.currentTrack()">
+  @if (player.currentTrack(); as track) {
+    <div class="now">
+      <app-cover-art class="art" [src]="track.coverUrl" [alt]="track.title" [seed]="track.title" />
+      <div class="copy">
+        <strong>{{ track.title }}</strong>
+        <a [routerLink]="['/artists', track.artistId || track.artist?.id]">
+          {{ track.artistName || track.artist?.name }}
+        </a>
+      </div>
+    </div>
+  } @else {
+    <div class="now muted">
+      <div class="art placeholder"></div>
+      <p>Choose a track to start listening</p>
+    </div>
+  }
+
+  <div class="transport">
+    <div class="controls">
+      <button
+        type="button"
+        class="ghost"
+        [class.on]="player.shuffle()"
+        aria-label="Toggle shuffle"
+        (click)="player.toggleShuffle()"
+      >
+        <app-icon name="shuffle" />
+      </button>
+      <button type="button" class="ghost" aria-label="Previous track" (click)="player.prev()">
+        <app-icon name="prev" />
+      </button>
+      <button
+        type="button"
+        class="play"
+        [attr.aria-label]="player.playing() ? 'Pause' : 'Play'"
+        (click)="player.togglePlay()"
+      >
+        <app-icon [name]="player.playing() ? 'pause' : 'play'" />
+      </button>
+      <button type="button" class="ghost" aria-label="Next track" (click)="player.next()">
+        <app-icon name="next" />
+      </button>
+      <button
+        type="button"
+        class="ghost"
+        [class.on]="player.repeat() !== 'off'"
+        [attr.aria-label]="'Repeat ' + player.repeat()"
+        (click)="player.cycleRepeat()"
+      >
+        <app-icon name="repeat" />
+      </button>
+    </div>
+    <div class="progress">
+      <span>{{ player.position() | duration }}</span>
+      <div
+        class="bar"
+        role="slider"
+        tabindex="0"
+        [attr.aria-valuemin]="0"
+        [attr.aria-valuemax]="player.duration() || 0"
+        [attr.aria-valuenow]="player.position()"
+        aria-label="Seek"
+        (click)="onSeek($event)"
+        (keydown)="onSeekKey($event)"
+      >
+        <span class="fill" [style.width.%]="player.duration() ? (player.position() / player.duration()) * 100 : 0"></span>
+      </div>
+      <span>{{ player.duration() | duration }}</span>
+    </div>
+  </div>
+
+  <div class="extras">
+    <button
+      type="button"
+      class="ghost"
+      [class.on]="player.queueOpen()"
+      aria-label="Open queue"
+      (click)="player.toggleQueue()"
+    >
+      <app-icon name="queue" />
+    </button>
+    <button
+      type="button"
+      class="ghost"
+      [attr.aria-label]="player.muted() ? 'Unmute' : 'Mute'"
+      (click)="player.toggleMute()"
+    >
+      <app-icon [name]="player.muted() || player.volume() === 0 ? 'mute' : 'volume'" />
+    </button>
+    <input
+      class="vol"
+      type="range"
+      min="0"
+      max="1"
+      step="0.01"
+      [value]="player.volume()"
+      aria-label="Volume"
+      (input)="onVolume($event)"
+    />
+  </div>
+</div>

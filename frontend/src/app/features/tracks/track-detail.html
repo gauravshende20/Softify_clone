@@ -1,0 +1,32 @@
+@if (data.value().track; as track) {
+  <header class="hero">
+    <app-cover-art class="art" [src]="track.coverUrl" [alt]="track.title" [seed]="track.title" />
+    <div>
+      <p class="eyebrow">Song</p>
+      <h1>{{ track.title }}</h1>
+      <p>
+        <a [routerLink]="['/artists', track.artistId || track.artist?.id]">{{ track.artistName || track.artist?.name }}</a>
+        @if (track.albumId) {
+          · <a [routerLink]="['/albums', track.albumId]">{{ track.albumTitle || track.album?.title }}</a>
+        }
+        · {{ track.durationSec | duration }}
+      </p>
+      <div class="actions">
+        <button type="button" class="btn primary" aria-label="Play track" (click)="play()">Play</button>
+        <button type="button" class="btn" [attr.aria-label]="track.liked ? 'Unlike' : 'Like'" (click)="like()">
+          {{ track.liked ? 'Liked' : 'Like' }}
+        </button>
+      </div>
+    </div>
+  </header>
+  <section>
+    <h2>Listeners also play</h2>
+    @for (item of data.value().related; track item.id; let i = $index) {
+      <app-track-row [track]="item" [index]="i + 1" (play)="player.playFromList(data.value().related, i)" />
+    } @empty {
+      <app-empty-state title="No related tracks" message="Recommendations will appear after more listening." />
+    }
+  </section>
+} @else if (!data.isLoading()) {
+  <app-empty-state title="Track not found" message="This song is not in the catalog." />
+}

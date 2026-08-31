@@ -1,0 +1,11 @@
+package com.harmonia.auth.repo;
+
+import com.harmonia.auth.domain.EmailVerificationToken;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+import java.util.UUID;
+
+public interface EmailVerificationTokenRepository extends JpaRepository<EmailVerificationToken, UUID> {
+    Optional<EmailVerificationToken> findByTokenHash(String tokenHash);
+}

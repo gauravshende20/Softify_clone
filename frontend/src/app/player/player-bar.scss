@@ -1,0 +1,133 @@
+:host {
+  display: block;
+  border-top: 1px solid var(--border);
+  background: #121218;
+  padding: 0.7rem 1rem 0.85rem;
+}
+
+.player {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.6fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+}
+
+.now,
+.extras,
+.controls,
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.now {
+  min-width: 0;
+}
+
+.copy {
+  min-width: 0;
+  display: grid;
+}
+
+.copy strong,
+.copy a,
+.now p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.copy a,
+.now p,
+.progress span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.art {
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 0.4rem;
+  flex: 0 0 auto;
+}
+
+.placeholder {
+  background: var(--surface-2);
+}
+
+.transport {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.controls {
+  justify-content: center;
+}
+
+.ghost,
+.play {
+  border: 0;
+  background: none;
+  color: var(--text);
+  display: grid;
+  place-items: center;
+}
+
+.ghost {
+  color: var(--muted);
+}
+
+.ghost.on {
+  color: var(--accent);
+}
+
+.play {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: var(--text);
+  color: #111;
+}
+
+.progress {
+  font-variant-numeric: tabular-nums;
+}
+
+.bar {
+  flex: 1;
+  height: 0.35rem;
+  border-radius: 99px;
+  background: #2b2b36;
+  cursor: pointer;
+  position: relative;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
+.extras {
+  justify-content: flex-end;
+}
+
+.vol {
+  width: 6.5rem;
+  accent-color: var(--accent);
+}
+
+@media (max-width: 840px) {
+  .player {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .transport {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+  .extras .vol {
+    display: none;
+  }
+}

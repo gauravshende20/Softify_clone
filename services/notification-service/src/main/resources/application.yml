@@ -11,10 +11,12 @@ spring:
     password: ${DB_PASSWORD:root123}
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     open-in-view: false
     properties:
       hibernate:
+        type:
+          preferred_uuid_jdbc_type: CHAR
         jdbc:
           time_zone: UTC
   flyway:
@@ -24,17 +26,9 @@ spring:
     consumer:
       group-id: notification-service
       auto-offset-reset: earliest
-  mail:
-    host: ${MAIL_HOST:}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
-    properties:
-      mail:
-        smtp:
-          auth: ${MAIL_SMTP_AUTH:false}
-          starttls:
-            enable: ${MAIL_SMTP_STARTTLS:true}
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
 eureka:
   client:
     service-url:

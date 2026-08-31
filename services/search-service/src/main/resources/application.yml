@@ -13,11 +13,6 @@ spring:
     consumer:
       group-id: search-service
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: com.harmonia.common.kafka
-        spring.json.value.default.type: com.harmonia.common.kafka.DomainEvent
 eureka:
   client:
     service-url:

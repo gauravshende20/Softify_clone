@@ -15,6 +15,8 @@ public interface TrackRepository extends JpaRepository<Track, UUID> {
 
     List<Track> findByAlbumIdOrderByTrackNumberAsc(UUID albumId);
 
+    List<Track> findByArtistIdAndStatusOrderByTitleAsc(UUID artistId, TrackStatus status);
+
     List<Track> findByIdIn(List<UUID> ids);
 
     @Query(value = """

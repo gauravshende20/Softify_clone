@@ -103,8 +103,8 @@ public class CatalogSeed implements ApplicationRunner {
     private void seedAlbumTracks(Artist artist, Album album, Set<Genre> genres, List<SeedTrack> titles) {
         for (int i = 0; i < titles.size(); i++) {
             SeedTrack item = titles.get(i);
-            String key = "demo/audio/" + Genre.slugify(artist.getName()) + "/" + Genre.slugify(item.title()) + ".mp3";
-            tracks.save(Track.seed(item.id(), artist, album, item.title(), 180_000 + i * 15_000, key, i + 1, genres));
+            String key = "demo/audio/" + Genre.slugify(artist.getName()) + "/" + Genre.slugify(item.title()) + ".wav";
+            tracks.save(Track.seed(item.id(), artist, album, item.title(), 28_000, key, i + 1, genres));
         }
     }
 

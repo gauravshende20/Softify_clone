@@ -1,7 +1,7 @@
 <div class="page">
   <header>
     <h1>Browse</h1>
-    <p>Genres, colors, and the latest rooms on Harmonia.</p>
+    <p>Genres, albums, artists, and the demo songs on Harmonia.</p>
   </header>
 
   <div class="genres">
@@ -14,13 +14,37 @@
     }
   </div>
 
-  <app-section-row title="New releases">
-    @for (album of releases.value(); track album.id) {
+  <section class="stack">
+    <h2>Songs</h2>
+    @for (track of tracks.value(); track track.id; let i = $index) {
+      <app-track-row
+        [track]="track"
+        [index]="i + 1"
+        [active]="player.currentTrack()?.id === track.id"
+        (play)="player.playFromList(tracks.value(), i)"
+      />
+    }
+  </section>
+
+  <app-section-row title="Albums">
+    @for (album of albums.value(); track album.id) {
       <app-media-card
         [title]="album.title"
         [subtitle]="album.artistName || album.artist?.name || ''"
         [image]="album.coverUrl"
         [link]="['/albums', album.id]"
+      />
+    }
+  </app-section-row>
+
+  <app-section-row title="Artists">
+    @for (artist of artists.value(); track artist.id) {
+      <app-media-card
+        [title]="artist.name"
+        [subtitle]="artist.verified ? 'Verified' : 'Artist'"
+        [image]="artist.imageUrl"
+        [link]="['/artists', artist.id]"
+        [round]="true"
       />
     }
   </app-section-row>

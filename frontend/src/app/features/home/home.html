@@ -1,13 +1,33 @@
 <div class="page">
   <header class="hero">
-    <p class="eyebrow">Evening mix</p>
+    <p class="eyebrow">Demo catalog</p>
     <h1>Good to hear you, {{ auth.displayName() }}</h1>
-    <p>A quieter catalog, a warmer room — recently played, made for you, and what’s moving tonight.</p>
+    <p>Press play on Sea Glass — a 28-second original clip so you can check playback.</p>
+    @if (demoTrack(); as demo) {
+      <button type="button" class="demo-play" (click)="playDemo()">
+        Play {{ demo.title }} · {{ demo.artistName }}
+      </button>
+    }
   </header>
 
   @if (feed.isLoading()) {
     <p class="muted">Tuning the room…</p>
   }
+
+  <section class="stack">
+    <h2>Songs you can play</h2>
+    @for (track of feed.value().tracks; track track.id; let i = $index) {
+      <app-track-row
+        [track]="track"
+        [index]="i + 1"
+        [active]="player.currentTrack()?.id === track.id"
+        (play)="player.playFromList(feed.value().tracks, i, { contextType: 'home' })"
+        (like)="like(track.id)"
+      />
+    } @empty {
+      <app-empty-state title="No songs yet" message="The catalog is still warming up. Refresh in a moment." />
+    }
+  </section>
 
   <app-section-row title="Recently played" link="/recently-played">
     @for (track of feed.value().recent.slice(0, 10); track track.id) {
@@ -23,35 +43,11 @@
     }
   </app-section-row>
 
-  <app-section-row title="Made for you" link="/recommendations">
-    @for (playlist of feed.value().madeForYou; track playlist.id) {
-      <app-media-card
-        [title]="playlist.name"
-        [subtitle]="playlist.description || 'Personal mix'"
-        [image]="playlist.coverUrl"
-        [link]="['/playlists', playlist.id]"
-      />
-    }
-  </app-section-row>
-
-  <section class="stack">
-    <h2>Trending</h2>
-    @for (track of feed.value().trending.slice(0, 8); track track.id; let i = $index) {
-      <app-track-row
-        [track]="track"
-        [index]="i + 1"
-        [active]="player.currentTrack()?.id === track.id"
-        (play)="player.playFromList(feed.value().trending, i)"
-        (like)="like(track.id)"
-      />
-    }
-  </section>
-
-  <app-section-row title="Popular artists" link="/browse">
+  <app-section-row title="Artists" link="/browse">
     @for (artist of feed.value().artists; track artist.id) {
       <app-media-card
         [title]="artist.name"
-        [subtitle]="(artist.followers || 0) + ' followers'"
+        [subtitle]="artist.verified ? 'Verified artist' : 'Artist'"
         [image]="artist.imageUrl"
         [link]="['/artists', artist.id]"
         [round]="true"
@@ -59,13 +55,14 @@
     }
   </app-section-row>
 
-  <app-section-row title="New releases">
-    @for (album of feed.value().releases; track album.id) {
+  <app-section-row title="Albums">
+    @for (album of feed.value().albums; track album.id) {
       <app-media-card
         [title]="album.title"
         [subtitle]="album.artistName || album.artist?.name || ''"
         [image]="album.coverUrl"
         [link]="['/albums', album.id]"
+        (play)="player.playFromList(feed.value().tracks.filter(t => t.albumId === album.id))"
       />
     }
   </app-section-row>

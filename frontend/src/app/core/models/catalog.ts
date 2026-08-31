@@ -22,6 +22,7 @@ export interface Album {
   durationSec?: number;
   genre?: string;
   year?: number;
+  tracks?: Track[];
 }
 
 export interface Track {

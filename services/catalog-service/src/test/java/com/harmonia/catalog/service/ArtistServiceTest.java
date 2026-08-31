@@ -32,13 +32,14 @@ class ArtistServiceTest {
 
     @Mock ArtistRepository artists;
     @Mock AlbumRepository albums;
+    @Mock com.harmonia.catalog.repo.TrackRepository tracks;
     @Mock GenreService genreService;
 
     ArtistService service;
 
     @BeforeEach
     void setUp() {
-        service = new ArtistService(artists, albums, genreService, Mappers.getMapper(CatalogMapper.class));
+        service = new ArtistService(artists, albums, tracks, genreService, Mappers.getMapper(CatalogMapper.class));
     }
 
     @Test

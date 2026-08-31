@@ -77,6 +77,11 @@ public class AlbumService {
     }
 
     @Transactional(readOnly = true)
+    public List<TrackSummary> tracks(UUID id, CurrentUser user) {
+        return get(id, user).tracks();
+    }
+
+    @Transactional(readOnly = true)
     public AlbumResponse get(UUID id, CurrentUser user) {
         Album album = require(id);
         boolean privileged = CatalogAccess.canManage(user, album.getArtist()) || CatalogAccess.isStaff(user);

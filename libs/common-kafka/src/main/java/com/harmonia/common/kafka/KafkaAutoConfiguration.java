@@ -46,9 +46,15 @@ public class KafkaAutoConfiguration {
     @Bean
     public ConsumerFactory<String, DomainEvent> domainEventConsumerFactory(KafkaProperties properties) {
         Map<String, Object> config = new HashMap<>(properties.buildConsumerProperties(null));
-        config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        JsonDeserializer<DomainEvent> deserializer = new JsonDeserializer<>(DomainEvent.class, false);
+        config.remove(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG);
+        config.remove(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG);
+        config.remove(JsonDeserializer.VALUE_DEFAULT_TYPE);
+        config.remove(JsonDeserializer.KEY_DEFAULT_TYPE);
+        config.remove(JsonDeserializer.TRUSTED_PACKAGES);
+        config.remove(JsonDeserializer.USE_TYPE_INFO_HEADERS);
+        config.remove(JsonDeserializer.TYPE_MAPPINGS);
+        JsonDeserializer<DomainEvent> deserializer = new JsonDeserializer<>(DomainEvent.class);
+        deserializer.setUseTypeHeaders(false);
         deserializer.addTrustedPackages("com.harmonia.common.kafka");
         return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), deserializer);
     }

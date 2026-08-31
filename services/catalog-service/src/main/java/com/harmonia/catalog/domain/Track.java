@@ -94,7 +94,7 @@ public class Track {
 
     public static Track seed(UUID id, Artist artist, Album album, String title, int durationMs,
                              String objectKey, Integer trackNumber, Set<Genre> genres) {
-        Track track = create(id, artist, album, title, durationMs, objectKey, "audio/mpeg", 0L, false, trackNumber, genres);
+        Track track = create(id, artist, album, title, durationMs, objectKey, "audio/wav", 2_469_644L, false, trackNumber, genres);
         track.status = TrackStatus.PUBLISHED;
         return track;
     }

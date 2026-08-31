@@ -8,29 +8,41 @@ import { Album, Artist, Genre, StreamUrlResponse, Track } from '../models/catalo
 export class CatalogService {
   private readonly http = inject(HttpClient);
 
+  listTracks(page = 0, size = 20): Observable<Track[]> {
+    return this.http
+      .get<Track[] | PageResponse<Track>>(`${API_BASE}/tracks`, { params: pageParams(page, size) })
+      .pipe(map((value) => asList(value).map(normalizeTrack)), catchError(() => of([] as Track[])));
+  }
+
   listArtists(page = 0, size = 20): Observable<PageResponse<Artist>> {
     return this.http
       .get<Artist[] | PageResponse<Artist>>(`${API_BASE}/artists`, { params: pageParams(page, size) })
       .pipe(
-        map(asPage),
+        map((value) => {
+          const page = asPage(value);
+          return { ...page, content: page.content.map(normalizeArtist) };
+        }),
         catchError(() => of(emptyPage<Artist>(size))),
       );
   }
 
   getArtist(id: string): Observable<Artist | null> {
-    return this.http.get<Artist>(`${API_BASE}/artists/${id}`).pipe(catchError(() => of(null)));
+    return this.http.get<Artist>(`${API_BASE}/artists/${id}`).pipe(
+      map(normalizeArtist),
+      catchError(() => of(null)),
+    );
   }
 
   artistAlbums(id: string): Observable<Album[]> {
     return this.http
       .get<Album[] | PageResponse<Album>>(`${API_BASE}/artists/${id}/albums`)
-      .pipe(map(asList), catchError(() => of([] as Album[])));
+      .pipe(map((value) => asList(value).map(normalizeAlbum)), catchError(() => of([] as Album[])));
   }
 
   artistTracks(id: string): Observable<Track[]> {
     return this.http
       .get<Track[] | PageResponse<Track>>(`${API_BASE}/artists/${id}/tracks`)
-      .pipe(map(asList), catchError(() => of([] as Track[])));
+      .pipe(map((value) => asList(value).map(normalizeTrack)), catchError(() => of([] as Track[])));
   }
 
   followArtist(id: string): Observable<void> {
@@ -45,23 +57,44 @@ export class CatalogService {
     return this.http
       .get<Album[] | PageResponse<Album>>(`${API_BASE}/albums`, { params: pageParams(page, size) })
       .pipe(
-        map(asPage),
+        map((value) => {
+          const page = asPage(value);
+          return { ...page, content: page.content.map(normalizeAlbum) };
+        }),
         catchError(() => of(emptyPage<Album>(size))),
       );
   }
 
   getAlbum(id: string): Observable<Album | null> {
-    return this.http.get<Album>(`${API_BASE}/albums/${id}`).pipe(catchError(() => of(null)));
+    return this.http.get<Album & { tracks?: Track[] }>(`${API_BASE}/albums/${id}`).pipe(
+      map((album) => {
+        const mapped = normalizeAlbum(album);
+        mapped.tracks = (album.tracks ?? []).map(normalizeTrack);
+        return mapped;
+      }),
+      catchError(() => of(null)),
+    );
   }
 
   albumTracks(id: string): Observable<Track[]> {
-    return this.http
-      .get<Track[] | PageResponse<Track>>(`${API_BASE}/albums/${id}/tracks`)
-      .pipe(map(asList), catchError(() => of([] as Track[])));
+    return this.http.get<Track[] | PageResponse<Track> | { tracks?: Track[] }>(`${API_BASE}/albums/${id}/tracks`).pipe(
+      map((value) => {
+        if (value && !Array.isArray(value) && 'tracks' in value) {
+          return (value.tracks ?? []).map(normalizeTrack);
+        }
+        return asList(value as Track[] | PageResponse<Track>).map(normalizeTrack);
+      }),
+      catchError(() =>
+        this.getAlbum(id).pipe(map((album) => album?.tracks ?? [])),
+      ),
+    );
   }
 
   getTrack(id: string): Observable<Track | null> {
-    return this.http.get<Track>(`${API_BASE}/tracks/${id}`).pipe(catchError(() => of(null)));
+    return this.http.get<Track>(`${API_BASE}/tracks/${id}`).pipe(
+      map(normalizeTrack),
+      catchError(() => of(null)),
+    );
   }
 
   streamUrl(trackId: string): Observable<StreamUrlResponse> {
@@ -115,4 +148,44 @@ export class CatalogService {
 
 function pageParams(page: number, size: number): HttpParams {
   return new HttpParams().set('page', String(page)).set('size', String(size));
+}
+
+type RawTrack = Track & {
+  durationMs?: number;
+  artworkKey?: string;
+  artist?: Artist & { imageKey?: string };
+  album?: Album & { artworkKey?: string };
+};
+
+type RawAlbum = Album & { artworkKey?: string; artist?: Artist & { name?: string } };
+type RawArtist = Artist & { imageKey?: string };
+
+export function normalizeTrack(raw: RawTrack): Track {
+  const durationSec =
+    raw.durationSec || (raw.durationMs != null ? Math.round(raw.durationMs / 1000) : 0);
+  return {
+    ...raw,
+    durationSec,
+    artistId: raw.artistId || raw.artist?.id,
+    artistName: raw.artistName || raw.artist?.name,
+    albumId: raw.albumId || raw.album?.id,
+    albumTitle: raw.albumTitle || raw.album?.title,
+    coverUrl: raw.coverUrl || raw.artworkKey || raw.album?.artworkKey || raw.album?.coverUrl,
+  };
+}
+
+export function normalizeAlbum(raw: RawAlbum): Album {
+  return {
+    ...raw,
+    artistName: raw.artistName || raw.artist?.name,
+    artistId: raw.artistId || raw.artist?.id,
+    coverUrl: raw.coverUrl || raw.artworkKey,
+  };
+}
+
+export function normalizeArtist(raw: RawArtist): Artist {
+  return {
+    ...raw,
+    imageUrl: raw.imageUrl || raw.imageKey,
+  };
 }

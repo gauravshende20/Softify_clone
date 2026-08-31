@@ -4,9 +4,12 @@ import com.harmonia.catalog.domain.Album;
 import com.harmonia.catalog.domain.AlbumStatus;
 import com.harmonia.catalog.domain.Artist;
 import com.harmonia.catalog.domain.ArtistStatus;
+import com.harmonia.catalog.domain.TrackStatus;
 import com.harmonia.catalog.dto.AlbumSummary;
 import com.harmonia.catalog.dto.ArtistResponse;
 import com.harmonia.catalog.dto.ArtistSummary;
+import com.harmonia.catalog.dto.TrackSummary;
+import com.harmonia.catalog.repo.TrackRepository;
 import com.harmonia.catalog.dto.CreateArtistRequest;
 import com.harmonia.catalog.dto.PatchArtistStatusRequest;
 import com.harmonia.catalog.dto.UpdateArtistRequest;
@@ -30,15 +33,18 @@ public class ArtistService {
 
     private final ArtistRepository artists;
     private final AlbumRepository albums;
+    private final TrackRepository tracks;
     private final GenreService genreService;
     private final CatalogMapper mapper;
 
     public ArtistService(ArtistRepository artists,
                          AlbumRepository albums,
+                         TrackRepository tracks,
                          GenreService genreService,
                          CatalogMapper mapper) {
         this.artists = artists;
         this.albums = albums;
+        this.tracks = tracks;
         this.genreService = genreService;
         this.mapper = mapper;
     }
@@ -73,6 +79,27 @@ public class ArtistService {
                 .map(mapper::toAlbumSummary)
                 .toList();
         return mapper.toArtist(artist, summaries);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AlbumSummary> albums(UUID id, CurrentUser user) {
+        return get(id, user).albums();
+    }
+
+    @Transactional(readOnly = true)
+    public List<TrackSummary> tracks(UUID id, CurrentUser user) {
+        requireVisible(id, user);
+        return tracks.findByArtistIdAndStatusOrderByTitleAsc(id, TrackStatus.PUBLISHED).stream()
+                .map(mapper::toTrackSummary)
+                .toList();
+    }
+
+    private Artist requireVisible(UUID id, CurrentUser user) {
+        Artist artist = require(id);
+        if (artist.getStatus() == ArtistStatus.HIDDEN && !CatalogAccess.canManage(user, artist) && !CatalogAccess.isStaff(user)) {
+            throw HarmoniaException.notFound(ErrorCode.ARTIST_NOT_FOUND, "Artist not found");
+        }
+        return artist;
     }
 
     @Transactional

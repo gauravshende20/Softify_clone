@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -47,6 +48,16 @@ public class ArtistController {
     @GetMapping("/{id}")
     public ArtistResponse get(@PathVariable UUID id, CurrentUser user) {
         return artists.get(id, user);
+    }
+
+    @GetMapping("/{id}/albums")
+    public List<com.harmonia.catalog.dto.AlbumSummary> albums(@PathVariable UUID id, CurrentUser user) {
+        return artists.albums(id, user);
+    }
+
+    @GetMapping("/{id}/tracks")
+    public List<com.harmonia.catalog.dto.TrackSummary> tracks(@PathVariable UUID id, CurrentUser user) {
+        return artists.tracks(id, user);
     }
 
     @PostMapping

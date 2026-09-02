@@ -24,6 +24,10 @@ x-java-env: &java-env
   MAIL_USERNAME: ${MAIL_USERNAME:-}
   MAIL_PASSWORD: ${MAIL_PASSWORD:-}
   MAIL_FROM: ${MAIL_FROM:-noreply@harmonia.local}
+  STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+  STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+  STRIPE_PRICE_ID_PREMIUM_MONTHLY: ${STRIPE_PRICE_ID_PREMIUM_MONTHLY:-}
+  APP_PUBLIC_URL: ${APP_PUBLIC_URL:-http://localhost:4200}
 
 services:
   config-server:
@@ -194,6 +198,20 @@ services:
         condition: service_healthy
       kafka:
         condition: service_started
+      config-server:
+        condition: service_started
+
+  payment-service:
+    build:
+      context: ./services/payment-service
+    ports:
+      - "8090:8090"
+    environment:
+      <<: *java-env
+      DB_URL: jdbc:mysql://mysql:3306/harmonia_payment?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    depends_on:
+      mysql:
+        condition: service_healthy
       config-server:
         condition: service_started
 

@@ -56,6 +56,10 @@ spring:
           uri: ${ANALYTICS_SERVICE_URI:lb://analytics-service}
           predicates:
             - Path=/api/v1/analytics/**, /api/v1/admin/analytics/**
+        - id: payment-service
+          uri: ${PAYMENT_SERVICE_URI:lb://payment-service}
+          predicates:
+            - Path=/api/v1/payments/**
       httpclient:
         connect-timeout: 2000
         response-timeout: 10s

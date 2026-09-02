@@ -46,7 +46,8 @@ public class GatewaySecurityConfig {
                                 "/api/v1/auth/refresh",
                                 "/api/v1/auth/forgot-password",
                                 "/api/v1/auth/reset-password",
-                                "/api/v1/auth/verify-email").permitAll()
+                                "/api/v1/auth/verify-email",
+                                "/api/v1/payments/webhooks/stripe").permitAll()
                         .pathMatchers(HttpMethod.GET,
                                 "/api/v1/tracks/**",
                                 "/api/v1/artists/**",

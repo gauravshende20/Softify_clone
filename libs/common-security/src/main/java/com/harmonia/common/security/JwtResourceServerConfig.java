@@ -87,7 +87,8 @@ public class JwtResourceServerConfig implements WebMvcConfigurer {
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/register", "/api/v1/auth/login",
                                 "/api/v1/auth/refresh", "/api/v1/auth/forgot-password",
-                                "/api/v1/auth/reset-password", "/api/v1/auth/verify-email").permitAll()
+                                "/api/v1/auth/reset-password", "/api/v1/auth/verify-email",
+                                "/api/v1/payments/webhooks/stripe").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/tracks/**", "/api/v1/artists/**",
                                 "/api/v1/albums/**", "/api/v1/genres/**", "/api/v1/search/**",
                                 "/api/v1/playlists/public/**").permitAll()

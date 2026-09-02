@@ -73,3 +73,6 @@ Development secrets in `.env.example` are **not** for shared or production use. 
 ## License
 
 Proprietary — all rights reserved unless a license file is added to this repository.
+# Payment subscriptions
+
+Stripe-backed subscriptions are implemented in `payment-service`. See [the payment setup guide](docs/payments.md) before enabling it; it documents the required test-mode environment variables and webhook forwarding.

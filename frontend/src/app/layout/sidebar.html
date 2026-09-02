@@ -29,6 +29,9 @@
     <a routerLink="/recommendations">
       <app-icon name="music" /> Made for you
     </a>
+    <a routerLink="/subscription" routerLinkActive="active">
+      <app-icon name="music" /> Premium
+    </a>
     @if (auth.isArtist()) {
       <a routerLink="/studio">
         <app-icon name="studio" /> Artist studio

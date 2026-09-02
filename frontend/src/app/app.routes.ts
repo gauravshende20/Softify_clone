@@ -93,6 +93,21 @@ export const routes: Routes = [
         loadComponent: () => import('./features/profile/profile').then((m) => m.Profile),
       },
       {
+        path: 'subscription',
+        title: 'Premium · Harmonia',
+        loadComponent: () => import('./features/subscription/subscription').then((m) => m.SubscriptionPage),
+      },
+      {
+        path: 'subscription/success',
+        title: 'Payment received · Harmonia',
+        loadComponent: () => import('./features/subscription/subscription').then((m) => m.SubscriptionPage),
+      },
+      {
+        path: 'subscription/cancelled',
+        title: 'Checkout cancelled · Harmonia',
+        loadComponent: () => import('./features/subscription/subscription').then((m) => m.SubscriptionPage),
+      },
+      {
         path: 'studio',
         title: 'Artist studio · Harmonia',
         canActivate: [roleGuard],

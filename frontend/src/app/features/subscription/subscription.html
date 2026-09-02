@@ -1,0 +1,50 @@
+<section class="page">
+  <header>
+    <p class="eyebrow">Harmonia Premium</p>
+    <h1>Music without limits.</h1>
+    <p class="intro">Manage your subscription securely through Stripe.</p>
+  </header>
+
+  @if (completed) {
+    <p class="notice success">Thanks—your payment was submitted. Your Premium access will appear as soon as Stripe confirms it.</p>
+  }
+  @if (cancelled) {
+    <p class="notice">Checkout was cancelled. You have not been charged.</p>
+  }
+
+  @if (subscription.isLoading()) {
+    <p class="muted">Loading subscription…</p>
+  } @else if (subscription.value(); as current) {
+    <article class="plan" [class.active]="current.premium">
+      <div>
+        <p class="label">Current plan</p>
+        <h2>{{ current.premium ? 'Premium' : 'Free' }}</h2>
+        @if (current.premium && current.currentPeriodEnd) {
+          <p class="muted">
+            @if (current.cancelAtPeriodEnd) { Ends } @else { Renews } on {{ current.currentPeriodEnd | date: 'mediumDate' }}
+          </p>
+        } @else {
+          <p class="muted">Upgrade anytime. Checkout is hosted by Stripe.</p>
+        }
+      </div>
+      @if (current.premium) {
+        <button class="btn secondary" type="button" [disabled]="redirecting()" (click)="manage()">
+          {{ redirecting() ? 'Opening…' : 'Manage subscription' }}
+        </button>
+      } @else {
+        <button class="btn primary" type="button" [disabled]="redirecting()" (click)="checkout()">
+          {{ redirecting() ? 'Redirecting…' : 'Get Premium' }}
+        </button>
+      }
+    </article>
+  } @else {
+    <p class="notice">We could not load your subscription. Please refresh and try again.</p>
+  }
+
+  <div class="features">
+    <div><strong>Secure payment</strong><span>Card details are entered only on Stripe.</span></div>
+    <div><strong>Control anytime</strong><span>Update payment details or cancel in Stripe’s billing portal.</span></div>
+  </div>
+
+  <a class="back" routerLink="/">Back to Home</a>
+</section>
